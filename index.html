@@ -548,7 +548,7 @@
     document.getElementById('reportRoadType').textContent = currentRoad.type;
     document.getElementById('reportAuthority').textContent = `${currentRoad.authority} (${currentRoad.phone})`;
     document.getElementById('smsBody').textContent = smsBody;
-    document.getElementById('smsPhone').href = `sms:${currentRoad.phone}&body=${encodeURIComponent(smsBody)}`;
+    document.getElementById('smsPhone').href = `sms:01077705849&body=${encodeURIComponent(smsBody)}`;
     document.getElementById('callPhone').href = `tel:${currentRoad.phone}`;
 
     document.getElementById('resultOverlay').classList.add('show');

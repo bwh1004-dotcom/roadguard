@@ -145,10 +145,52 @@
     border-radius: 50px; padding: 14px 48px; font-size: 14px; font-weight: 500;
     font-family: 'Noto Sans KR', sans-serif; cursor: pointer; width: 100%;
   }
+
+  /* 확인 팝업 */
+  .confirm-overlay {
+    position: fixed; inset: 0; background: rgba(10,15,13,0.95);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 200; padding: 32px 24px; gap: 16px;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+  }
+  .confirm-overlay.show { opacity: 1; pointer-events: all; }
+  .confirm-icon { font-size: 52px; }
+  .confirm-title { font-size: 20px; font-weight: 900; text-align: center; }
+  .confirm-desc {
+    font-size: 13px; color: var(--text-dim); text-align: center;
+    line-height: 1.7; white-space: pre-line;
+    background: var(--card); border: 1px solid var(--gray);
+    border-radius: 14px; padding: 14px 18px; width: 100%;
+  }
+  .confirm-btns { display: flex; gap: 12px; width: 100%; }
+  .confirm-cancel {
+    flex: 1; padding: 16px; border-radius: 14px;
+    background: var(--card); border: 1px solid var(--gray);
+    color: var(--text-dim); font-size: 15px; font-weight: 700;
+    font-family: 'Noto Sans KR', sans-serif; cursor: pointer;
+  }
+  .confirm-ok {
+    flex: 1; padding: 16px; border-radius: 14px;
+    border: none; color: #fff; font-size: 15px; font-weight: 700;
+    font-family: 'Noto Sans KR', sans-serif; cursor: pointer;
+  }
   .bottom-note { font-size: 11px; color: var(--text-dim); text-align: center; padding-bottom: 8px; line-height: 1.6; position: relative; z-index: 1; }
 </style>
 </head>
 <body>
+
+
+<!-- 확인 팝업 -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-icon" id="confirmIcon">🐾</div>
+  <div class="confirm-title" id="confirmTitle">일반 신고</div>
+  <div class="confirm-desc" id="confirmDesc">도로 위 사체를 발견하셨나요?</div>
+  <div class="confirm-btns">
+    <button class="confirm-cancel" onclick="cancelConfirm()">취소</button>
+    <button class="confirm-ok" id="confirmBtn" onclick="doReport()">신고하기</button>
+  </div>
+  <input type="hidden" id="confirmType" value="">
+</div>
 
 <div class="result-overlay" id="resultOverlay">
   <div class="result-icon" id="resultIcon">✅</div>
@@ -184,7 +226,7 @@
     <div class="report-btn-wrap">
       <div class="ring ring-red"></div>
       <div class="ring ring-red"></div>
-      <button class="report-btn btn-emergency" id="btnEmergency" onclick="handleReport('emergency')">
+      <button class="report-btn btn-emergency" id="btnEmergency" onclick="showConfirm('emergency')">
         <div class="btn-icon">🆘</div>
         <div class="btn-text">긴급 신고</div>
       </button>
@@ -196,7 +238,7 @@
     <div class="report-btn-wrap">
       <div class="ring"></div>
       <div class="ring"></div>
-      <button class="report-btn btn-normal" id="btnNormal" onclick="handleReport('normal')">
+      <button class="report-btn btn-normal" id="btnNormal" onclick="showConfirm('normal')">
         <div class="btn-icon">🐾</div>
         <div class="btn-text">일반 신고</div>
       </button>
@@ -280,6 +322,35 @@
       document.getElementById('gpsValue').textContent = '위치 권한을 허용해주세요';
       document.getElementById('gpsValue').classList.remove('loading');
     });
+  }
+
+
+  function showConfirm(type) {
+    document.getElementById('confirmType').value = type;
+    if (type === 'emergency') {
+      document.getElementById('confirmIcon').textContent = '🆘';
+      document.getElementById('confirmTitle').textContent = '긴급 신고';
+      document.getElementById('confirmTitle').style.color = '#ff4444';
+      document.getElementById('confirmDesc').textContent = '살아있는 부상 동물을 발견하셨나요?\n야생동물구조센터로 연결됩니다.\n\n잘못 누른 경우 취소를 눌러주세요.';
+      document.getElementById('confirmBtn').style.background = '#cc2222';
+    } else {
+      document.getElementById('confirmIcon').textContent = '🐾';
+      document.getElementById('confirmTitle').textContent = '일반 신고';
+      document.getElementById('confirmTitle').style.color = '#2dff7a';
+      document.getElementById('confirmDesc').textContent = '도로 위 사체를 발견하셨나요?\n담당 기관에 수거 요청됩니다.\n\n잘못 누른 경우 취소를 눌러주세요.';
+      document.getElementById('confirmBtn').style.background = '#1a9447';
+    }
+    document.getElementById('confirmOverlay').classList.add('show');
+  }
+
+  function cancelConfirm() {
+    document.getElementById('confirmOverlay').classList.remove('show');
+  }
+
+  function doReport() {
+    const type = document.getElementById('confirmType').value;
+    document.getElementById('confirmOverlay').classList.remove('show');
+    handleReport(type);
   }
 
   async function handleReport(type) {

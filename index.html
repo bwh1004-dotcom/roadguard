@@ -277,6 +277,7 @@
   const EMAILJS_SERVICE  = 'service_4q8jx1i';
   const EMAILJS_TEMPLATE = 'template_66qosmf';
   const RESCUE_PHONE     = '1566-1618';
+  const SHEET_URL = 'https://script.google.com/macros/s/AKfycbzNfOuD9QZszjLo4ut2bAkZ9MmAxjZU7K4M5ovCzREUIYijUTq5nok4O6Bw6wyEEJjK/exec';
 
   let currentRoad = { type: '확인 중', roadName: '', authority: '지자체', phone: '120' };
   let currentCoords = null;
@@ -404,6 +405,27 @@
     } catch (e) {
       document.getElementById('emailStatus').textContent = '⚠️ 이메일 전송 실패 (문자로 신고하세요)';
       document.getElementById('emailStatus').className = 'email-status error';
+    }
+
+    // 구글 시트 자동 기록
+    try {
+      await fetch(SHEET_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          date: dateStr,
+          time: timeStr,
+          report_type: isEmergency ? '🆘 긴급신고 (살아있는 동물)' : '🐾 일반신고 (사체수거)',
+          road_type: currentRoad.type,
+          road_name: currentRoad.roadName || '—',
+          location: locStr,
+          maps_link: mapsLink || '—',
+          authority: isEmergency ? `야생동물구조센터 (${RESCUE_PHONE})` : `${currentRoad.authority} (${currentRoad.phone})`
+        })
+      });
+    } catch (e) {
+      console.log('시트 기록 실패:', e);
     }
   }
 

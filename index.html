@@ -277,7 +277,7 @@
   const EMAILJS_SERVICE  = 'service_4q8jx1i';
   const EMAILJS_TEMPLATE = 'template_66qosmf';
   const RESCUE_PHONE     = '1566-1618';
-  const SHEET_URL = 'https://script.google.com/macros/s/AKfycbzNfOuD9QZszjLo4ut2bAkZ9MmAxjZU7K4M5ovCzREUIYijUTq5nok4O6Bw6wyEEJjK/exec';
+  const SHEET_URL = 'https://script.google.com/macros/s/AKfycbzOTNvCp0cUvEIrTEIiNen4ZEK_XJwZn-DlosLRdFPPyqCqgoe3hMBZzNHKxi-fVyFV/exec';
 
   let currentRoad = { type: '확인 중', roadName: '', authority: '지자체', phone: '120' };
   let currentCoords = null;
@@ -411,8 +411,7 @@
     try {
       await fetch(SHEET_URL, {
         method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({
           date: dateStr,
           time: timeStr,

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Road Guard</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0d1a0e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow: hidden;
+    font-family: 'Noto Sans KR', sans-serif;
+  }
+
+  /* 배경 빛 */
+  .bg-glow {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(42,90,60,0.4) 0%, transparent 70%);
+    animation: glowPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes glowPulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+  }
+
+  /* 도로 라인 */
+  .road {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 35%;
+    background: linear-gradient(to top, rgba(74,144,96,0.4), transparent);
+  }
+
+  .road::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(255,255,255,0.15), transparent);
+    animation: roadFlash 1.5s ease-in-out infinite;
+  }
+
+  @keyframes roadFlash {
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 1; }
+  }
+
+  /* 메인 콘텐츠 */
+  .splash {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    opacity: 0;
+    animation: splashIn 0.6s ease forwards 0.1s;
+  }
+
+  @keyframes splashIn {
+    from { opacity: 0; transform: scale(0.85); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+
+  /* 발바닥 */
+  .paw {
+    font-size: 80px;
+    line-height: 1;
+    margin-bottom: 24px;
+    animation: pawBreathe 1.8s ease-in-out infinite;
+    filter: drop-shadow(0 0 24px rgba(126,200,154,0.5));
+  }
+
+  @keyframes pawBreathe {
+    0%, 100% { transform: scale(1);    filter: drop-shadow(0 0 24px rgba(126,200,154,0.4)); }
+    50%       { transform: scale(1.1); filter: drop-shadow(0 0 40px rgba(126,200,154,0.8)); }
+  }
+
+  /* 타이틀 */
+  .title {
+    font-family: 'Black Han Sans', sans-serif;
+    font-size: 52px;
+    letter-spacing: -1px;
+    line-height: 1;
+    background: linear-gradient(135deg, #fff 0%, #7ec89a 60%, #4a9060 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 10px;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    color: #8aaa90;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    margin-bottom: 56px;
+  }
+
+  /* 로딩 바 */
+  .loader-wrap {
+    width: 120px;
+    height: 2px;
+    background: rgba(126,200,154,0.15);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .loader-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #4a9060, #7ec89a);
+    border-radius: 2px;
+    animation: loadBar 1.3s ease forwards 0.4s;
+  }
+
+  @keyframes loadBar {
+    0%   { width: 0%; }
+    60%  { width: 75%; }
+    100% { width: 100%; }
+  }
+
+  .loader-text {
+    font-size: 11px;
+    color: #4a9060;
+    letter-spacing: 2px;
+  }
+
+  /* 브랜드 */
+  .brand {
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    color: rgba(138,170,144,0.4);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    z-index: 1;
+    opacity: 0;
+    animation: splashIn 0.5s ease forwards 0.5s;
+  }
+
+  /* 페이드 아웃 */
+  body.fade-out {
+    animation: fadeOut 0.5s ease forwards;
+  }
+
+  @keyframes fadeOut {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+<div class="road"></div>
+
+<div class="splash">
+  <div class="paw">🐾</div>
+  <div class="title">Road Guard</div>
+  <div class="subtitle">도로 경비원</div>
+  <div class="loader-wrap">
+    <div class="loader-bar"></div>
+  </div>
+  <div class="loader-text">로딩 중...</div>
+</div>
+
+<div class="brand">UNO_DEYA Project · 2026</div>
+
+<script>
+  // 1.8초 후 app.html로 이동
+  setTimeout(() => {
+    document.body.classList.add('fade-out');
+    setTimeout(() => {
+      window.location.href = './app.html';
+    }, 480);
+  }, 1800);
+</script>
+
+</body>
+</html>

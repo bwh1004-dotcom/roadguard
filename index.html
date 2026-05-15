@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Road Guard — 도로 경비원</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;700&family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --dark: #0d1a0e;
+    --green-deep: #1a3320;
+    --green-mid: #2d5a3d;
+    --green-bright: #4a9060;
+    --green-light: #7ec89a;
+    --cream: #f0ebe0;
+    --warm: #e8d5b0;
+    --accent: #ff6b35;
+    --text-main: #e8ede5;
+    --text-muted: #8aaa90;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--dark);
+    color: var(--text-main);
+    font-family: 'Noto Sans KR', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 40px 24px;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(42,90,60,0.5) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 40% at 20% 80%, rgba(26,51,32,0.6) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 50% at 80% 70%, rgba(13,26,14,0.8) 0%, transparent 60%);
+    z-index: 0;
+  }
+
+  /* Road line animation */
+  .road-line {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 40%;
+    background: linear-gradient(to top, rgba(255,107,53,0.3), transparent);
+    z-index: 0;
+  }
+
+  .road-line::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1px;
+    height: 100%;
+    background: linear-gradient(to top, rgba(255,255,255,0.15), transparent);
+    animation: roadPulse 3s ease-in-out infinite;
+  }
+
+  @keyframes roadPulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+
+  /* Floating particles */
+  .particles {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .particle {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--green-light);
+    opacity: 0;
+    animation: float linear infinite;
+  }
+
+  @keyframes float {
+    0% { opacity: 0; transform: translateY(100vh) scale(0); }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.2; }
+    100% { opacity: 0; transform: translateY(-10vh) scale(1.5); }
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    max-width: 600px;
+  }
+
+  .paw-icon {
+    font-size: 64px;
+    display: block;
+    margin-bottom: 24px;
+    animation: breathe 4s ease-in-out infinite;
+    filter: drop-shadow(0 0 20px rgba(126,200,154,0.4));
+  }
+
+  @keyframes breathe {
+    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 20px rgba(126,200,154,0.4)); }
+    50% { transform: scale(1.08); filter: drop-shadow(0 0 35px rgba(126,200,154,0.7)); }
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: rgba(74,144,96,0.2);
+    border: 1px solid rgba(74,144,96,0.4);
+    color: var(--green-light);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    padding: 6px 16px;
+    border-radius: 20px;
+    margin-bottom: 28px;
+    text-transform: uppercase;
+  }
+
+  .hero-title {
+    font-family: 'Black Han Sans', sans-serif;
+    font-size: clamp(48px, 12vw, 88px);
+    line-height: 1;
+    letter-spacing: -2px;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #fff 0%, var(--green-light) 60%, var(--green-bright) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-subtitle-en {
+    font-family: 'Noto Serif KR', serif;
+    font-size: clamp(13px, 3vw, 18px);
+    color: var(--text-muted);
+    letter-spacing: 6px;
+    margin-bottom: 36px;
+    text-transform: uppercase;
+  }
+
+  /* Origin story */
+  .origin-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(126,200,154,0.15);
+    border-radius: 16px;
+    padding: 24px 28px;
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .origin-card::before {
+    content: '"';
+    position: absolute;
+    top: -20px;
+    left: 16px;
+    font-size: 120px;
+    font-family: 'Noto Serif KR', serif;
+    color: rgba(74,144,96,0.15);
+    line-height: 1;
+  }
+
+  .origin-text {
+    font-family: 'Noto Serif KR', serif;
+    font-size: clamp(18px, 4.5vw, 24px);
+    font-weight: 700;
+    color: var(--cream);
+    line-height: 1.6;
+    position: relative;
+    z-index: 1;
+  }
+
+  .origin-sub {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 12px;
+    font-style: italic;
+  }
+
+  .origin-who {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .origin-who-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--green-bright);
+  }
+
+  .origin-who-text {
+    font-size: 12px;
+    color: var(--green-light);
+    letter-spacing: 1px;
+  }
+
+  .hero-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--green-bright);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 500;
+    padding: 18px 36px;
+    border-radius: 50px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 32px rgba(74,144,96,0.4);
+    margin-bottom: 16px;
+  }
+
+  .hero-cta:hover {
+    background: var(--green-light);
+    transform: translateY(-3px);
+    box-shadow: 0 16px 48px rgba(74,144,96,0.5);
+    color: var(--dark);
+  }
+
+  .hero-cta-arrow {
+    font-size: 20px;
+    transition: transform 0.3s;
+  }
+
+  .hero-cta:hover .hero-cta-arrow {
+    transform: translateX(4px);
+  }
+
+  .hero-note {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 8px;
+  }
+
+  /* STATS */
+  .stats-section {
+    padding: 80px 24px;
+    background: var(--green-deep);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stats-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(13,26,14,0.5) 0%, transparent 50%, rgba(13,26,14,0.3) 100%);
+  }
+
+  .stats-inner {
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  .section-label {
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--green-light);
+    text-transform: uppercase;
+    margin-bottom: 48px;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    text-align: center;
+  }
+
+  .stat-item {
+    padding: 24px 16px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 16px;
+    border: 1px solid rgba(126,200,154,0.1);
+  }
+
+  .stat-num {
+    font-family: 'Black Han Sans', sans-serif;
+    font-size: clamp(36px, 8vw, 56px);
+    color: var(--green-light);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .stat-accent {
+    display: inline-block;
+    font-size: 11px;
+    background: rgba(255,107,53,0.15);
+    color: var(--accent);
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-top: 6px;
+  }
+
+  /* HOW IT WORKS */
+  .how-section {
+    padding: 100px 24px;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .how-title {
+    font-family: 'Black Han Sans', sans-serif;
+    font-size: clamp(28px, 7vw, 44px);
+    text-align: center;
+    margin-bottom: 60px;
+    color: var(--cream);
+  }
+
+  .step-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .step-item {
+    display: flex;
+    gap: 24px;
+    position: relative;
+    padding-bottom: 48px;
+  }
+
+  .step-item:last-child {
+    padding-bottom: 0;
+  }
+
+  .step-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    width: 48px;
+  }
+
+  .step-num {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--green-mid);
+    border: 2px solid var(--green-bright);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Black Han Sans', sans-serif;
+    font-size: 20px;
+    color: var(--green-light);
+    flex-shrink: 0;
+  }
+
+  .step-line {
+    flex: 1;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--green-mid), transparent);
+    margin-top: 8px;
+  }
+
+  .step-item:last-child .step-line {
+    display: none;
+  }
+
+  .step-content {
+    padding-top: 10px;
+  }
+
+  .step-emoji {
+    font-size: 28px;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .step-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--cream);
+    margin-bottom: 6px;
+  }
+
+  .step-desc {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  /* WHY */
+  .why-section {
+    padding: 80px 24px;
+    background: rgba(255,255,255,0.02);
+    border-top: 1px solid rgba(126,200,154,0.08);
+    border-bottom: 1px solid rgba(126,200,154,0.08);
+  }
+
+  .why-inner {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .why-title {
+    font-family: 'Black Han Sans', sans-serif;
+    font-size: clamp(28px, 7vw, 44px);
+    text-align: center;
+    margin-bottom: 48px;
+    color: var(--cream);
+  }
+
+  .why-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .why-card {
+    background: rgba(26,51,32,0.5);
+    border: 1px solid rgba(74,144,96,0.2);
+    border-radius: 16px;
+    padding: 24px 20px;
+    transition: border-color 0.3s;
+  }
+
+  .why-card:hover {
+    border-color: rgba(74,144,96,0.5);
+  }
+
+  .why-card-icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .why-card-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--cream);
+    margin-bottom: 8px;
+  }
+
+  .why-card-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* FINAL CTA */
+  .final-section {
+    padding: 120px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .final-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(42,90,60,0.35) 0%, transparent 70%);
+  }
+
+  .final-inner {
+    position: relative;
+    z-index: 1;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .final-paw {
+    font-size: 72px;
+    display: block;
+    margin-bottom: 32px;
+    animation: breathe 4s ease-in-out infinite;
+    animation-delay: 2s;
+  }
+
+  .final-title {
+    font-family: 'Black Han Sans', sans-serif;
+    font-size: clamp(28px, 7vw, 48px);
+    color: var(--cream);
+    margin-bottom: 16px;
+    line-height: 1.2;
+  }
+
+  .final-sub {
+    font-size: 15px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    margin-bottom: 48px;
+  }
+
+  .final-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 17px;
+    font-weight: 700;
+    padding: 20px 44px;
+    border-radius: 50px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 40px rgba(255,107,53,0.35);
+    letter-spacing: 0.5px;
+  }
+
+  .final-cta:hover {
+    transform: translateY(-4px) scale(1.03);
+    box-shadow: 0 16px 56px rgba(255,107,53,0.5);
+    color: #fff;
+  }
+
+  .final-free {
+    margin-top: 20px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .final-free span {
+    color: var(--green-light);
+    font-weight: 500;
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 40px 24px;
+    text-align: center;
+    border-top: 1px solid rgba(126,200,154,0.08);
+  }
+
+  .footer-logo {
+    font-family: 'Black Han Sans', sans-serif;
+    font-size: 22px;
+    color: var(--green-light);
+    margin-bottom: 8px;
+  }
+
+  .footer-brand {
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  /* Scroll reveal */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (max-width: 480px) {
+    .stats-grid { grid-template-columns: 1fr; gap: 12px; }
+    .why-grid { grid-template-columns: 1fr; }
+    .origin-card { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="road-line"></div>
+
+  <!-- Particles -->
+  <div class="particles" id="particles"></div>
+
+  <div class="hero-content">
+    <span class="paw-icon">🐾</span>
+    <div class="hero-badge">시민 참여 로드킬 신고</div>
+    <h1 class="hero-title">Road<br>Guard</h1>
+    <p class="hero-subtitle-en">도로 경비원</p>
+
+    <div class="origin-card">
+      <p class="origin-text">
+        "아빠, 저거 뭐야?"
+      </p>
+      <p class="origin-sub">차 안에서 로드킬 동물을 본 네 살 딸 로아의 한 마디.</p>
+      <p class="origin-sub">그 질문 하나가 이 앱을 만들었습니다.</p>
+      <div class="origin-who">
+        <div class="origin-who-dot"></div>
+        <span class="origin-who-text">UNO_DEYA × Road Guard 2026</span>
+      </div>
+    </div>
+
+    <a href="./splash.html" class="hero-cta">
+      지금 신고하기
+      <span class="hero-cta-arrow">→</span>
+    </a>
+    <p class="hero-note">🔒 완전 무료 · 로그인 불필요 · GPS 자동감지</p>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="stats-section">
+  <div class="stats-inner">
+    <p class="section-label reveal">현재까지 누적 데이터</p>
+    <div class="stats-grid">
+      <div class="stat-item reveal">
+        <div class="stat-num">33</div>
+        <div class="stat-label">총 신고 건수</div>
+        <div class="stat-accent">계속 증가 중</div>
+      </div>
+      <div class="stat-item reveal">
+        <div class="stat-num">7</div>
+        <div class="stat-label">긴급 신고<br>(즉시 처리 필요)</div>
+      </div>
+      <div class="stat-item reveal">
+        <div class="stat-num">26</div>
+        <div class="stat-label">일반 신고<br>(기록·모니터링)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-section">
+  <h2 class="how-title reveal">신고 방법, 딱 3단계</h2>
+  <div class="step-list">
+    <div class="step-item reveal">
+      <div class="step-left">
+        <div class="step-num">1</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-content">
+        <span class="step-emoji">📍</span>
+        <div class="step-name">위치 자동 감지</div>
+        <div class="step-desc">GPS가 현재 위치를 자동으로 잡아줍니다. 도로 유형(국도/지방도/고속도로)도 자동 판별해요.</div>
+      </div>
+    </div>
+    <div class="step-item reveal">
+      <div class="step-left">
+        <div class="step-num">2</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-content">
+        <span class="step-emoji">🚨</span>
+        <div class="step-name">신고 유형 선택</div>
+        <div class="step-desc">긴급(즉시 수거 필요) 또는 일반(기록용)을 선택하고, 동물 종류와 간단한 메모를 입력해요.</div>
+      </div>
+    </div>
+    <div class="step-item reveal">
+      <div class="step-left">
+        <div class="step-num">3</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-content">
+        <span class="step-emoji">✅</span>
+        <div class="step-name">신고 완료</div>
+        <div class="step-desc">버튼 하나로 끝. 신고 내용은 자동으로 관리팀에 전달돼요. 당신의 1분이 한 생명을 기록합니다.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section class="why-section">
+  <div class="why-inner">
+    <h2 class="why-title reveal">왜 Road Guard인가요?</h2>
+    <div class="why-grid">
+      <div class="why-card reveal">
+        <span class="why-card-icon">🆓</span>
+        <div class="why-card-title">완전 무료</div>
+        <div class="why-card-desc">광고도 없고, 유료 기능도 없어요. 영원히 무료입니다.</div>
+      </div>
+      <div class="why-card reveal">
+        <span class="why-card-icon">⚡</span>
+        <div class="why-card-title">1분이면 끝</div>
+        <div class="why-card-desc">회원가입 불필요. 링크 하나로 바로 신고할 수 있어요.</div>
+      </div>
+      <div class="why-card reveal">
+        <span class="why-card-icon">🗺️</span>
+        <div class="why-card-title">GPS 자동</div>
+        <div class="why-card-desc">운전 중에도 위치가 자동으로 입력돼요. 주소 칠 필요 없어요.</div>
+      </div>
+      <div class="why-card reveal">
+        <span class="why-card-icon">🤝</span>
+        <div class="why-card-title">녹색연합 협력</div>
+        <div class="why-card-desc">환경단체와 협력해 데이터를 실질적으로 활용합니다.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-section">
+  <div class="final-bg"></div>
+  <div class="final-inner">
+    <span class="final-paw">🐾</span>
+    <h2 class="final-title reveal">당신도<br>도로 경비원이<br>될 수 있어요</h2>
+    <p class="final-sub reveal">신고 하나하나가 쌓여 도로 위 생명을 지키는 데이터가 됩니다.<br>지금 바로 시작하세요.</p>
+    <a href="./splash.html" class="final-cta reveal">
+      🐾 신고하러 가기
+    </a>
+    <p class="final-free reveal"><span>무료</span> · 로그인 없음 · 30초 신고</p>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">🐾 Road Guard</div>
+  <div class="footer-brand">UNO_DEYA Project · 도로 경비원</div>
+</footer>
+
+<script>
+  // Particles
+  const container = document.getElementById('particles');
+  for (let i = 0; i < 18; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.animationDuration = (6 + Math.random() * 10) + 's';
+    p.style.animationDelay = (Math.random() * 8) + 's';
+    p.style.width = p.style.height = (2 + Math.random() * 3) + 'px';
+    p.style.opacity = (0.2 + Math.random() * 0.5).toString();
+    container.appendChild(p);
+  }
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+        }, 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  reveals.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

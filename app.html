@@ -358,8 +358,9 @@
   async function handleReport(type) {
     if (navigator.vibrate)
       type === 'emergency' ? navigator.vibrate([100,50,100,50,200]) : navigator.vibrate([50,30,100]);
+   const isEmergency = type === 'emergency';
 playSound(isEmergency ? 'emergency' : 'normal');
-    const isEmergency = type === 'emergency';
+    
     const now = new Date();
     const timeStr = now.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
     const dateStr = now.toLocaleDateString('ko-KR');
